@@ -82,5 +82,5 @@ dependencies {
     // text font
     implementation(libs.text.google.font)
     // desugar
-    implementation(libs.desugar)
+    coreLibraryDesugaring(libs.desugar)
 }
