@@ -1,6 +1,5 @@
-package com.example.studysmart.ui.theme
+package com.example.studysmart.presentation.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
