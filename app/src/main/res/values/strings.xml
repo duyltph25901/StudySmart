@@ -1,3 +1,6 @@
 <resources>
-    <string name="app_name">StudySmart</string>
+    <string name="app_name">Study Smart</string>
+    <string name="subject_count">Subject Count</string>
+    <string name="studied_hours">Studied Hours</string>
+    <string name="goal_study_hours">Goal Study Hours</string>
 </resources>
