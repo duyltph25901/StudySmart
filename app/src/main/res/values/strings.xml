@@ -6,4 +6,5 @@
     <string name="subjects">Subjects</string>
     <string name="add_subject">Add Subject</string>
     <string name="msg_empty_subjects">"You don't have any subjects.\nClick the + button to add new subject."</string>
+    <string name="start_study_session">Start Study Session</string>
 </resources>

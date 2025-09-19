@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -74,6 +75,23 @@ fun DashboardScreen() {
                     modifier = Modifier.fillMaxWidth(),
                     subjectsList = dummySubjectData
                 )
+            }
+
+            item {
+                Button(
+                    modifier = Modifier.fillMaxWidth()
+                        .padding(
+                            horizontal = 48.dp,
+                            vertical = 20.dp
+                        ),
+                    onClick = {
+
+                    }
+                ) {
+                    Text(
+                        text = stringResource(R.string.start_study_session)
+                    )
+                }
             }
         }
     }
