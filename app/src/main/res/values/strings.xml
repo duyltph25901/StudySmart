@@ -3,4 +3,7 @@
     <string name="subject_count">Subject Count</string>
     <string name="studied_hours">Studied Hours</string>
     <string name="goal_study_hours">Goal Study Hours</string>
+    <string name="subjects">Subjects</string>
+    <string name="add_subject">Add Subject</string>
+    <string name="msg_empty_subjects">"You don't have any subjects.\nClick the + button to add new subject."</string>
 </resources>
