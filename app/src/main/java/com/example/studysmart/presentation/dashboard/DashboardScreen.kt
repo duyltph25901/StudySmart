@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -34,11 +35,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.studysmart.R
+import com.example.studysmart.domain.model.Session
 import com.example.studysmart.domain.model.Subject
 import com.example.studysmart.domain.model.Task
 import com.example.studysmart.presentation.components.CountCard
 import com.example.studysmart.presentation.components.SubjectCard
+import com.example.studysmart.presentation.components.studySessionList
 import com.example.studysmart.presentation.components.taskList
+import com.example.studysmart.util.Priority
 
 @Composable
 fun DashboardScreen() {
@@ -52,10 +56,19 @@ fun DashboardScreen() {
     )
 
     val dummyTasksData = listOf(
-        Task(0, 0,"Perpare Note", "", 0L, 1, "", false),
-        Task(1, 1,"Perpare Note", "", 0L, 1, "", true),
-        Task(2, 2,"Perpare Note", "", 0L, 1, "", true),
-        Task(3, 3,"Perpare Note", "", 0L, 1, "", false),
+        Task(0, 0,"Prepare Note", "", 0L, Priority.MEDIUM.value, "", false),
+        Task(1, 1,"Prepare Note", "", 0L, Priority.HIGH.value, "", true),
+        Task(2, 2,"Prepare Note", "", 0L, Priority.LOW.value, "", true),
+        Task(3, 3,"Prepare Note", "", 0L, Priority.MEDIUM.value, "", false),
+    )
+
+    val dummyTaskSession = listOf(
+        Session(0, "English", 0L, 0L, 0),
+        Session(0, "English", 0L, 0L, 0),
+        Session(0, "English", 0L, 0L, 0),
+        Session(0, "English", 0L, 0L, 0),
+        Session(0, "English", 0L, 0L, 0),
+        Session(0, "English", 0L, 0L, 0),
     )
 
     Scaffold(
@@ -64,8 +77,10 @@ fun DashboardScreen() {
             DashboardScreenTopBar()
         }
     ) { paddingValues ->
-        val sectionTitle = stringResource(R.string.upcoming_tasks).uppercase()
+        val sectionTitleTask = stringResource(R.string.upcoming_tasks).uppercase()
         val emptyTasks = stringResource(R.string.msg_empty_tasks)
+        val sectionTitleSession = stringResource(R.string.recent_study_sessions).uppercase()
+        val emptySessions = stringResource(R.string.msg_empty_sessions)
 
         LazyColumn (
             modifier = Modifier
@@ -108,13 +123,26 @@ fun DashboardScreen() {
             }
 
             taskList(
-                sectionTitle = sectionTitle,
+                sectionTitle = sectionTitleTask,
                 emptyListText = emptyTasks,
                 tasks = dummyTasksData,
                 onTaskClickEvent = { taskId ->
                     Log.d("duylt", "TaskId: $taskId")
                 }, onCheckboxTasClickEvent = { task ->
                     Log.d("duylt", "Task: $task")
+                }
+            )
+
+            item {
+                Spacer(modifier = Modifier.height(20.dp))
+            }
+
+            studySessionList(
+                sectionTitle = sectionTitleSession,
+                emptyListText = emptySessions,
+                sessions = dummyTaskSession,
+                onDeleteSessionEvent = { session ->
+                    Log.d("duylt", "Delete Session: $session")
                 }
             )
         }

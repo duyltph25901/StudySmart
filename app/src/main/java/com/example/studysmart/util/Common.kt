@@ -11,8 +11,8 @@ enum class Priority(
     val value: Int,
 ) {
     LOW(title = "Low", color = Green, value = 0),
-    MEDIUM(title = "Medium", color = Orange, value = 0),
-    HIGH(title = "High", color = Red, value = 0);
+    MEDIUM(title = "Medium", color = Orange, value = 1),
+    HIGH(title = "High", color = Red, value = 2);
 
     companion object {
         fun fromInt(value: Int) =
