@@ -8,6 +8,7 @@ import com.example.studysmart.presentation.theme.gradient4
 import com.example.studysmart.presentation.theme.gradient5
 
 data class Subject(
+    var subjectId: Int = 0,
     var name: String,
     var goalHours: Float,
     var colors: List<Color>

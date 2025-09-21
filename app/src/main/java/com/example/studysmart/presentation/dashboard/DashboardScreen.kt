@@ -1,5 +1,6 @@
 package com.example.studysmart.presentation.dashboard
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -34,18 +35,27 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.studysmart.R
 import com.example.studysmart.domain.model.Subject
+import com.example.studysmart.domain.model.Task
 import com.example.studysmart.presentation.components.CountCard
 import com.example.studysmart.presentation.components.SubjectCard
+import com.example.studysmart.presentation.components.taskList
 
 @Composable
 fun DashboardScreen() {
 
     val dummySubjectData = listOf(
-        Subject("English", 10f, Subject.subjectCardColors[0]),
-        Subject("Physic", 10f, Subject.subjectCardColors[1]),
-        Subject("Math", 10f, Subject.subjectCardColors[2]),
-        Subject("Fine Arts", 10f, Subject.subjectCardColors[3]),
-        Subject("Music", 10f, Subject.subjectCardColors[4]),
+        Subject(0,"English", 10f, Subject.subjectCardColors[0]),
+        Subject(1,"Physic", 10f, Subject.subjectCardColors[1]),
+        Subject(2,"Math", 10f, Subject.subjectCardColors[2]),
+        Subject(3,"Fine Arts", 10f, Subject.subjectCardColors[3]),
+        Subject(4,"Music", 10f, Subject.subjectCardColors[4]),
+    )
+
+    val dummyTasksData = listOf(
+        Task(0, 0,"Perpare Note", "", 0L, 1, "", false),
+        Task(1, 1,"Perpare Note", "", 0L, 1, "", true),
+        Task(2, 2,"Perpare Note", "", 0L, 1, "", true),
+        Task(3, 3,"Perpare Note", "", 0L, 1, "", false),
     )
 
     Scaffold(
@@ -54,6 +64,9 @@ fun DashboardScreen() {
             DashboardScreenTopBar()
         }
     ) { paddingValues ->
+        val sectionTitle = stringResource(R.string.upcoming_tasks).uppercase()
+        val emptyTasks = stringResource(R.string.msg_empty_tasks)
+
         LazyColumn (
             modifier = Modifier
                 .fillMaxSize()
@@ -93,6 +106,17 @@ fun DashboardScreen() {
                     )
                 }
             }
+
+            taskList(
+                sectionTitle = sectionTitle,
+                emptyListText = emptyTasks,
+                tasks = dummyTasksData,
+                onTaskClickEvent = { taskId ->
+                    Log.d("duylt", "TaskId: $taskId")
+                }, onCheckboxTasClickEvent = { task ->
+                    Log.d("duylt", "Task: $task")
+                }
+            )
         }
     }
 }
