@@ -23,4 +23,6 @@
     <string name="invalid_number">Invalid Number.</string>
     <string name="please_set_at_least_1_hour">Please Set At Least 1 Hour.</string>
     <string name="please_set_a_maximum_of_1000_hours">Please Set A Maximum Of 1000 hours.</string>
+    <string name="delete">Delete</string>
+    <string name="msg_confirm_delete_session">Are you sure, you want to delete this session? Your studied hours will be reduced by this session time. This action can not be undo.</string>
 </resources>

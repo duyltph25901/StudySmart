@@ -44,6 +44,7 @@ import com.example.studysmart.domain.model.Subject
 import com.example.studysmart.domain.model.Task
 import com.example.studysmart.presentation.components.AddSubjectDialog
 import com.example.studysmart.presentation.components.CountCard
+import com.example.studysmart.presentation.components.DeleteDialog
 import com.example.studysmart.presentation.components.SubjectCard
 import com.example.studysmart.presentation.components.studySessionList
 import com.example.studysmart.presentation.components.taskList
@@ -52,6 +53,7 @@ import com.example.studysmart.util.Priority
 @Composable
 fun DashboardScreen() {
     var isAddSubjectDialogOpen by rememberSaveable { mutableStateOf(false) }
+    var isDeleteSubjectDialogOpen by rememberSaveable { mutableStateOf(false) }
     var subjectName by rememberSaveable { mutableStateOf("") }
     var goalStudyHoursStr by rememberSaveable { mutableStateOf("") }
     var selectedColor by rememberSaveable { mutableStateOf(Subject.subjectCardColors.random()) }
@@ -95,6 +97,17 @@ fun DashboardScreen() {
             isAddSubjectDialogOpen = false
         }, onColorChangeEvent = { newSelectedColor ->
             selectedColor = newSelectedColor
+        }
+    )
+
+    DeleteDialog(
+        isOpen = isDeleteSubjectDialogOpen,
+        title = stringResource(R.string.delete_session),
+        bodyText = stringResource(R.string.msg_confirm_delete_session),
+        onDismissEvent = {
+            isDeleteSubjectDialogOpen = false
+        }, onConfirmEvent = {
+            isDeleteSubjectDialogOpen = false
         }
     )
 
@@ -173,7 +186,7 @@ fun DashboardScreen() {
                 emptyListText = emptySessions,
                 sessions = dummyTaskSession,
                 onDeleteSessionEvent = { session ->
-                    Log.d("duylt", "Delete Session: $session")
+                    isDeleteSubjectDialogOpen = true
                 }
             )
         }
