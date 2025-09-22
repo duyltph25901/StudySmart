@@ -27,6 +27,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,6 +42,7 @@ import com.example.studysmart.R
 import com.example.studysmart.domain.model.Session
 import com.example.studysmart.domain.model.Subject
 import com.example.studysmart.domain.model.Task
+import com.example.studysmart.presentation.components.AddSubjectDialog
 import com.example.studysmart.presentation.components.CountCard
 import com.example.studysmart.presentation.components.SubjectCard
 import com.example.studysmart.presentation.components.studySessionList
@@ -46,20 +51,24 @@ import com.example.studysmart.util.Priority
 
 @Composable
 fun DashboardScreen() {
+    var isAddSubjectDialogOpen by rememberSaveable { mutableStateOf(false) }
+    var subjectName by rememberSaveable { mutableStateOf("") }
+    var goalStudyHoursStr by rememberSaveable { mutableStateOf("") }
+    var selectedColor by rememberSaveable { mutableStateOf(Subject.subjectCardColors.random()) }
 
     val dummySubjectData = listOf(
-        Subject(0,"English", 10f, Subject.subjectCardColors[0]),
-        Subject(1,"Physic", 10f, Subject.subjectCardColors[1]),
-        Subject(2,"Math", 10f, Subject.subjectCardColors[2]),
-        Subject(3,"Fine Arts", 10f, Subject.subjectCardColors[3]),
-        Subject(4,"Music", 10f, Subject.subjectCardColors[4]),
+        Subject(0, "English", 10f, Subject.subjectCardColors[0]),
+        Subject(1, "Physic", 10f, Subject.subjectCardColors[1]),
+        Subject(2, "Math", 10f, Subject.subjectCardColors[2]),
+        Subject(3, "Fine Arts", 10f, Subject.subjectCardColors[3]),
+        Subject(4, "Music", 10f, Subject.subjectCardColors[4]),
     )
 
     val dummyTasksData = listOf(
-        Task(0, 0,"Prepare Note", "", 0L, Priority.MEDIUM.value, "", false),
-        Task(1, 1,"Prepare Note", "", 0L, Priority.HIGH.value, "", true),
-        Task(2, 2,"Prepare Note", "", 0L, Priority.LOW.value, "", true),
-        Task(3, 3,"Prepare Note", "", 0L, Priority.MEDIUM.value, "", false),
+        Task(0, 0, "Prepare Note", "", 0L, Priority.MEDIUM.value, "", false),
+        Task(1, 1, "Prepare Note", "", 0L, Priority.HIGH.value, "", true),
+        Task(2, 2, "Prepare Note", "", 0L, Priority.LOW.value, "", true),
+        Task(3, 3, "Prepare Note", "", 0L, Priority.MEDIUM.value, "", false),
     )
 
     val dummyTaskSession = listOf(
@@ -69,6 +78,24 @@ fun DashboardScreen() {
         Session(0, "English", 0L, 0L, 0),
         Session(0, "English", 0L, 0L, 0),
         Session(0, "English", 0L, 0L, 0),
+    )
+
+    AddSubjectDialog(
+        isOpen = isAddSubjectDialogOpen,
+        selectedColors = selectedColor,
+        subjectName = subjectName,
+        goalHours = goalStudyHoursStr,
+        onSubjectNameChange = { newSubjectName ->
+            subjectName = newSubjectName
+        }, onGoalHoursChange = { newGoalHours ->
+            goalStudyHoursStr = newGoalHours
+        }, onConfirmEvent = {
+            isAddSubjectDialogOpen = false
+        }, onDismissRequestEvent = {
+            isAddSubjectDialogOpen = false
+        }, onColorChangeEvent = { newSelectedColor ->
+            selectedColor = newSelectedColor
+        }
     )
 
     Scaffold(
@@ -82,7 +109,7 @@ fun DashboardScreen() {
         val sectionTitleSession = stringResource(R.string.recent_study_sessions).uppercase()
         val emptySessions = stringResource(R.string.msg_empty_sessions)
 
-        LazyColumn (
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
@@ -101,13 +128,17 @@ fun DashboardScreen() {
             item {
                 SubjectCardSection(
                     modifier = Modifier.fillMaxWidth(),
-                    subjectsList = dummySubjectData
+                    subjectsList = dummySubjectData,
+                    onAddSubjectEvent = {
+                        isAddSubjectDialogOpen = true
+                    }
                 )
             }
 
             item {
                 Button(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
                         .padding(
                             horizontal = 48.dp,
                             vertical = 20.dp
@@ -196,7 +227,8 @@ private fun CountCardsSection(
 private fun SubjectCardSection(
     modifier: Modifier = Modifier,
     subjectsList: List<Subject>,
-    emptyListTextRes: Int = R.string.msg_empty_subjects
+    emptyListTextRes: Int = R.string.msg_empty_subjects,
+    onAddSubjectEvent: () -> Unit
 ) {
     Column(
         modifier = modifier,
@@ -216,7 +248,7 @@ private fun SubjectCardSection(
 
             IconButton(
                 onClick = {
-
+                    onAddSubjectEvent.invoke()
                 }
             ) {
                 Icon(
@@ -228,7 +260,8 @@ private fun SubjectCardSection(
 
         if (subjectsList.isEmpty()) {
             Image(
-                modifier = Modifier.size(120.dp)
+                modifier = Modifier
+                    .size(120.dp)
                     .align(Alignment.CenterHorizontally),
                 painter = painterResource(R.drawable.img_books),
                 contentDescription = stringResource(emptyListTextRes)

@@ -12,4 +12,15 @@
     <string name="recent_study_sessions">Recent study sessions</string>
     <string name="msg_empty_sessions">You don\'t have any recent study sessions.\nStart a study session to begin recording your progress.</string>
     <string name="delete_session">Delete Session</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="add_update_subject">Add/Update Subject</string>
+    <string name="subject_name">Subject name</string>
+    <string name="please_enter_subject_name">Please Enter Subject Name.</string>
+    <string name="subject_name_is_too_short">Subject Name Is Too Short.</string>
+    <string name="subject_name_is_too_long">Subject Name Is Too Long.</string>
+    <string name="please_enter_goal_study_hours">Please Enter Goal Study Hours.</string>
+    <string name="invalid_number">Invalid Number.</string>
+    <string name="please_set_at_least_1_hour">Please Set At Least 1 Hour.</string>
+    <string name="please_set_a_maximum_of_1000_hours">Please Set A Maximum Of 1000 hours.</string>
 </resources>
