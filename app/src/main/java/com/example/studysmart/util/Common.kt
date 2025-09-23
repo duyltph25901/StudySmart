@@ -7,6 +7,10 @@ import com.example.studysmart.domain.model.Task
 import com.example.studysmart.presentation.theme.Green
 import com.example.studysmart.presentation.theme.Orange
 import com.example.studysmart.presentation.theme.Red
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 enum class Priority(
     val title: String,
@@ -46,3 +50,13 @@ val dummyTaskSession = listOf(
     Session(0, "English", 0L, 0L, 0),
     Session(0, "English", 0L, 0L, 0),
 )
+
+fun Long?.changeMillisToDateString(): String {
+    val date = this?.let {
+        Instant.ofEpochMilli(it)
+            .atZone(ZoneId.systemDefault())
+            .toLocalDate()
+    } ?: LocalDate.now()
+
+    return date?.format(DateTimeFormatter.ofPattern("dd MMM yyyy")) ?: ""
+}

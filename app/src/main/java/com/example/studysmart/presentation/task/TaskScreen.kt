@@ -29,6 +29,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,10 +43,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.studysmart.R
 import com.example.studysmart.presentation.components.DeleteDialog
+import com.example.studysmart.presentation.components.FeatureOrPresentSelectableDates
 import com.example.studysmart.presentation.components.TaskCheckBox
+import com.example.studysmart.presentation.components.TaskDatePicker
 import com.example.studysmart.presentation.theme.Red
 import com.example.studysmart.util.Priority
+import com.example.studysmart.util.changeMillisToDateString
+import java.time.Instant
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskScreen() {
     var title by remember { mutableStateOf("") }
@@ -58,6 +64,11 @@ fun TaskScreen() {
         else -> null
     }
     var isDeleteDialogOpen by rememberSaveable { mutableStateOf(false) }
+    var isDatePickerDialogOpen by rememberSaveable { mutableStateOf(false) }
+    val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = Instant.now().toEpochMilli(),
+        selectableDates = FeatureOrPresentSelectableDates
+    )
 
     DeleteDialog(
         isOpen = isDeleteDialogOpen,
@@ -67,6 +78,18 @@ fun TaskScreen() {
             isDeleteDialogOpen = false
         }, onConfirmEvent = {
             isDeleteDialogOpen = false
+        }
+    )
+
+    TaskDatePicker(
+        state = datePickerState,
+        isOpen = isDatePickerDialogOpen,
+        confirmText = stringResource(R.string.ok),
+        dismissText = stringResource(R.string.cancel),
+        onDismissEvent = {
+            isDatePickerDialogOpen = false
+        }, onConfirmEvent = {
+            isDatePickerDialogOpen = false
         }
     )
 
@@ -139,13 +162,13 @@ fun TaskScreen() {
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = "30 August, 2023",
+                    text = datePickerState.selectedDateMillis.changeMillisToDateString(),
                     style = MaterialTheme.typography.bodyLarge
                 )
 
                 IconButton(
                     onClick = {
-
+                        isDatePickerDialogOpen = true
                     }
                 ) {
                     Icon(
