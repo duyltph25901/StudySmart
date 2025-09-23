@@ -28,4 +28,5 @@
     <string name="navigate_back">Navigate back</string>
     <string name="delete_subject">Delete Subject</string>
     <string name="edit_subject">Edit Subject</string>
+    <string name="study_hours">Study Hours</string>
 </resources>
