@@ -59,18 +59,16 @@ fun TaskScreen() {
     }
     var isDeleteDialogOpen by rememberSaveable { mutableStateOf(false) }
 
-    if (isDeleteDialogOpen) {
-        DeleteDialog(
-            isOpen = isDeleteDialogOpen,
-            title = "${stringResource(R.string.delete_task)}?",
-            bodyText = stringResource(R.string.msg_confirm_delete_task),
-            onDismissEvent = {
-                isDeleteDialogOpen = false
-            }, onConfirmEvent = {
-                isDeleteDialogOpen = false
-            }
-        )
-    }
+    DeleteDialog(
+        isOpen = isDeleteDialogOpen,
+        title = "${stringResource(R.string.delete_task)}?",
+        bodyText = stringResource(R.string.msg_confirm_delete_task),
+        onDismissEvent = {
+            isDeleteDialogOpen = false
+        }, onConfirmEvent = {
+            isDeleteDialogOpen = false
+        }
+    )
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -139,7 +137,7 @@ fun TaskScreen() {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
-            ){
+            ) {
                 Text(
                     text = "30 August, 2023",
                     style = MaterialTheme.typography.bodyLarge
@@ -175,7 +173,9 @@ fun TaskScreen() {
                         label = entry.title,
                         backgroundColor = entry.color,
                         borderColor = if (entry == Priority.MEDIUM) Color.White else Color.Transparent,
-                        labelColor = if (entry == Priority.MEDIUM) Color.White else Color.White.copy(alpha = 0.7f),
+                        labelColor = if (entry == Priority.MEDIUM) Color.White else Color.White.copy(
+                            alpha = 0.7f
+                        ),
                         onClickEvent = {
 
                         }
@@ -192,7 +192,7 @@ fun TaskScreen() {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
-            ){
+            ) {
                 Text(
                     text = "English",
                     style = MaterialTheme.typography.bodyLarge
@@ -210,11 +210,13 @@ fun TaskScreen() {
                 }
             }
             Button(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .padding(vertical = 20.dp),
                 onClick = {
 
-                }, enabled = taskTitleError == null,
+                },
+                enabled = taskTitleError == null,
             ) {
                 Text(
                     text = stringResource(R.string.save)
@@ -240,7 +242,8 @@ private fun TaskScreenTopBar(
                 text = stringResource(R.string.task),
                 style = MaterialTheme.typography.headlineSmall
             )
-        }, navigationIcon = {
+        },
+        navigationIcon = {
             IconButton(
                 onClick = {
                     onBackEvent.invoke()
@@ -251,7 +254,8 @@ private fun TaskScreenTopBar(
                     contentDescription = stringResource(R.string.navigate_back)
                 )
             }
-        }, actions = {
+        },
+        actions = {
             if (isTaskExist) {
                 TaskCheckBox(
                     isCompleted = isComplete,
@@ -289,13 +293,15 @@ private fun PriorityButton(
         modifier = modifier
             .clickable {
                 onClickEvent.invoke()
-            }.background(backgroundColor)
+            }
+            .background(backgroundColor)
             .padding(5.dp)
             .border(
                 width = 1.dp,
                 color = borderColor,
                 shape = RoundedCornerShape(5.dp)
-            ).padding(5.dp),
+            )
+            .padding(5.dp),
         contentAlignment = Alignment.Center
     ) {
         Text(
