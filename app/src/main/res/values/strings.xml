@@ -29,4 +29,9 @@
     <string name="delete_subject">Delete Subject</string>
     <string name="edit_subject">Edit Subject</string>
     <string name="study_hours">Study Hours</string>
+    <string name="add">Add</string>
+    <string name="add_task">Add Task</string>
+    <string name="completed_task">Completed Task</string>
+    <string name="msg_empty_tasks_complete">"You don't have any completed tasks.\nClick the check box on completion of task. "</string>
+    <string name="msg_confirm_delete_subject">Are you sure, you want to delete this subject? All related tasks and study sessions will be permanently removed. This action can not be undo.</string>
 </resources>

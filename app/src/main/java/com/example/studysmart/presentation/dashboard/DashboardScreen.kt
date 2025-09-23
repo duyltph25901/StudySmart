@@ -39,48 +39,24 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.studysmart.R
-import com.example.studysmart.domain.model.Session
 import com.example.studysmart.domain.model.Subject
-import com.example.studysmart.domain.model.Task
 import com.example.studysmart.presentation.components.AddSubjectDialog
 import com.example.studysmart.presentation.components.CountCard
 import com.example.studysmart.presentation.components.DeleteDialog
 import com.example.studysmart.presentation.components.SubjectCard
 import com.example.studysmart.presentation.components.studySessionList
 import com.example.studysmart.presentation.components.taskList
-import com.example.studysmart.util.Priority
+import com.example.studysmart.util.dummySubjectData
+import com.example.studysmart.util.dummyTaskSession
+import com.example.studysmart.util.dummyTasksData
 
 @Composable
 fun DashboardScreen() {
     var isAddSubjectDialogOpen by rememberSaveable { mutableStateOf(false) }
-    var isDeleteSubjectDialogOpen by rememberSaveable { mutableStateOf(false) }
+    var isDeleteSessionDialogOpen by rememberSaveable { mutableStateOf(false) }
     var subjectName by rememberSaveable { mutableStateOf("") }
     var goalStudyHoursStr by rememberSaveable { mutableStateOf("") }
     var selectedColor by rememberSaveable { mutableStateOf(Subject.subjectCardColors.random()) }
-
-    val dummySubjectData = listOf(
-        Subject(0, "English", 10f, Subject.subjectCardColors[0]),
-        Subject(1, "Physic", 10f, Subject.subjectCardColors[1]),
-        Subject(2, "Math", 10f, Subject.subjectCardColors[2]),
-        Subject(3, "Fine Arts", 10f, Subject.subjectCardColors[3]),
-        Subject(4, "Music", 10f, Subject.subjectCardColors[4]),
-    )
-
-    val dummyTasksData = listOf(
-        Task(0, 0, "Prepare Note", "", 0L, Priority.MEDIUM.value, "", false),
-        Task(1, 1, "Prepare Note", "", 0L, Priority.HIGH.value, "", true),
-        Task(2, 2, "Prepare Note", "", 0L, Priority.LOW.value, "", true),
-        Task(3, 3, "Prepare Note", "", 0L, Priority.MEDIUM.value, "", false),
-    )
-
-    val dummyTaskSession = listOf(
-        Session(0, "English", 0L, 0L, 0),
-        Session(0, "English", 0L, 0L, 0),
-        Session(0, "English", 0L, 0L, 0),
-        Session(0, "English", 0L, 0L, 0),
-        Session(0, "English", 0L, 0L, 0),
-        Session(0, "English", 0L, 0L, 0),
-    )
 
     AddSubjectDialog(
         isOpen = isAddSubjectDialogOpen,
@@ -101,13 +77,13 @@ fun DashboardScreen() {
     )
 
     DeleteDialog(
-        isOpen = isDeleteSubjectDialogOpen,
+        isOpen = isDeleteSessionDialogOpen,
         title = stringResource(R.string.delete_session),
         bodyText = stringResource(R.string.msg_confirm_delete_session),
         onDismissEvent = {
-            isDeleteSubjectDialogOpen = false
+            isDeleteSessionDialogOpen = false
         }, onConfirmEvent = {
-            isDeleteSubjectDialogOpen = false
+            isDeleteSessionDialogOpen = false
         }
     )
 
@@ -186,7 +162,7 @@ fun DashboardScreen() {
                 emptyListText = emptySessions,
                 sessions = dummyTaskSession,
                 onDeleteSessionEvent = { session ->
-                    isDeleteSubjectDialogOpen = true
+                    isDeleteSessionDialogOpen = true
                 }
             )
         }

@@ -1,67 +1,192 @@
 package com.example.studysmart.presentation.subject
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.studysmart.R
+import com.example.studysmart.domain.model.Subject
+import com.example.studysmart.presentation.components.AddSubjectDialog
 import com.example.studysmart.presentation.components.CountCard
+import com.example.studysmart.presentation.components.DeleteDialog
+import com.example.studysmart.presentation.components.studySessionList
+import com.example.studysmart.presentation.components.taskList
+import com.example.studysmart.util.dummyTaskSession
+import com.example.studysmart.util.dummyTasksData
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SubjectScreen() {
+    val sectionTitleTask = stringResource(R.string.upcoming_tasks).uppercase()
+    val emptyTasks = stringResource(R.string.msg_empty_tasks)
+    val sectionTitleSession = stringResource(R.string.recent_study_sessions).uppercase()
+    val sectionTitleTaskComplete = stringResource(R.string.completed_task)
+    val emptyTasksComplete = stringResource(R.string.msg_empty_tasks_complete)
+    val emptySessions = stringResource(R.string.msg_empty_sessions)
+    var isAddSubjectDialogOpen by rememberSaveable { mutableStateOf(false) }
+    var isDeleteSubjectDialogOpen by rememberSaveable { mutableStateOf(false) }
+    val listState = rememberLazyListState()
+    val isFABExpanded by remember {
+        derivedStateOf { listState.firstVisibleItemIndex == 0 }
+    }
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    var subjectName by rememberSaveable { mutableStateOf("") }
+    var goalStudyHoursStr by rememberSaveable { mutableStateOf("") }
+    var selectedColor by rememberSaveable { mutableStateOf(Subject.subjectCardColors.random()) }
+
+    AddSubjectDialog(
+        isOpen = isAddSubjectDialogOpen,
+        selectedColors = selectedColor,
+        subjectName = subjectName,
+        goalHours = goalStudyHoursStr,
+        onSubjectNameChange = { newSubjectName ->
+            subjectName = newSubjectName
+        }, onGoalHoursChange = { newGoalHours ->
+            goalStudyHoursStr = newGoalHours
+        }, onConfirmEvent = {
+            isAddSubjectDialogOpen = false
+        }, onDismissRequestEvent = {
+            isAddSubjectDialogOpen = false
+        }, onColorChangeEvent = { newSelectedColor ->
+            selectedColor = newSelectedColor
+        }
+    )
+
+    DeleteDialog(
+        isOpen = isDeleteSubjectDialogOpen,
+        title = "${stringResource(R.string.delete_subject)}?",
+        bodyText = stringResource(R.string.msg_confirm_delete_subject),
+        onDismissEvent = {
+            isDeleteSubjectDialogOpen = false
+        }, onConfirmEvent = {
+            isDeleteSubjectDialogOpen = false
+        }
+    )
+
     Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             SubjectScreenTopBar(
                 title = "English",
                 onBackEvent = {
 
                 }, onDeleteEvent = {
-
+                    isDeleteSubjectDialogOpen = true
                 }, onEditEvent = {
-
-                }
+                    isAddSubjectDialogOpen = true
+                }, scrollBehavior = scrollBehavior
+            )
+        }, floatingActionButton = {
+            ExtendedFloatingActionButton(
+                onClick = {
+                    isAddSubjectDialogOpen = true
+                }, icon = {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = stringResource(R.string.add)
+                    )
+                }, text = {
+                    Text(
+                        text = stringResource(R.string.add_task)
+                    )
+                }, expanded = isFABExpanded
             )
         }
     ) { innerPadding ->
         LazyColumn(
-            modifier = Modifier.fillMaxSize()
-                .padding(innerPadding)
-        ){
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            state = listState
+        ) {
             item {
                 SubjectOverViewSection(
-                    modifier = Modifier.fillMaxWidth()
-                        .padding(12.dp ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(12.dp),
                     studiedHours = 10,
                     goalHours = 10,
                     progress = 0.75f
                 )
             }
+
+            taskList(
+                sectionTitle = sectionTitleTask,
+                emptyListText = emptyTasks,
+                tasks = dummyTasksData,
+                onTaskClickEvent = { taskId ->
+                    Log.d("duylt", "TaskId: $taskId")
+                }, onCheckboxTasClickEvent = { task ->
+                    Log.d("duylt", "Task: $task")
+                }
+            )
+
+            item {
+                Spacer(modifier = Modifier.height(20.dp))
+            }
+
+            taskList(
+                sectionTitle = sectionTitleTaskComplete,
+                emptyListText = emptyTasksComplete,
+                tasks = dummyTasksData,
+                onTaskClickEvent = { taskId ->
+                    Log.d("duylt", "TaskId: $taskId")
+                }, onCheckboxTasClickEvent = { task ->
+                    Log.d("duylt", "Task: $task")
+                }
+            )
+
+            item {
+                Spacer(modifier = Modifier.height(20.dp))
+            }
+
+            studySessionList(
+                sectionTitle = sectionTitleSession,
+                emptyListText = emptySessions,
+                sessions = dummyTaskSession,
+                onDeleteSessionEvent = { session ->
+                    isDeleteSubjectDialogOpen = true
+                }
+            )
         }
     }
 }
@@ -70,6 +195,7 @@ fun SubjectScreen() {
 @Composable
 fun SubjectScreenTopBar(
     title: String,
+    scrollBehavior: TopAppBarScrollBehavior,
     onBackEvent: () -> Unit,
     onDeleteEvent: () -> Unit,
     onEditEvent: () -> Unit
@@ -86,14 +212,16 @@ fun SubjectScreenTopBar(
                     contentDescription = stringResource(R.string.navigate_back)
                 )
             }
-        }, title = {
+        },
+        title = {
             Text(
                 text = title,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 style = MaterialTheme.typography.headlineSmall
             )
-        }, actions = {
+        },
+        actions = {
             IconButton(
                 onClick = {
                     onDeleteEvent.invoke()
@@ -115,14 +243,15 @@ fun SubjectScreenTopBar(
                     contentDescription = stringResource(R.string.edit_subject)
                 )
             }
-        }
+        },
+        scrollBehavior = scrollBehavior,
     )
 }
 
 @Composable
 fun SubjectOverViewSection(
     modifier: Modifier = Modifier,
-    studiedHours: Int ,
+    studiedHours: Int,
     goalHours: Int,
     progress: Float,
 ) {
