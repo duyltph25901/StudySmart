@@ -36,4 +36,15 @@
     <string name="msg_confirm_delete_subject">Are you sure, you want to delete this subject? All related tasks and study sessions will be permanently removed. This action can not be undo.</string>
     <string name="task">Task</string>
     <string name="delete_task">Delete Task</string>
+    <string name="title">Title</string>
+    <string name="desciption">Description</string>
+    <string name="msg_title_blank">Please enter task title.</string>
+    <string name="msg_title_under_4_chars">Task title is too short.</string>
+    <string name="msg_title_over_20_chars">Task title is too long.</string>
+    <string name="due_date">Due Date</string>
+    <string name="select_due_date">Select Due Date</string>
+    <string name="priority">Priority</string>
+    <string name="related_to_subject">Related To Subject</string>
+    <string name="select_subject">Select Subject</string>
+    <string name="msg_confirm_delete_task">Are you sure, you want to delete this task? This action can not be undo.</string>
 </resources>
