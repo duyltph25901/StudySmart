@@ -30,10 +30,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -44,11 +46,14 @@ import androidx.compose.ui.unit.dp
 import com.example.studysmart.R
 import com.example.studysmart.presentation.components.DeleteDialog
 import com.example.studysmart.presentation.components.FeatureOrPresentSelectableDates
+import com.example.studysmart.presentation.components.SubjectsBottomSheet
 import com.example.studysmart.presentation.components.TaskCheckBox
 import com.example.studysmart.presentation.components.TaskDatePicker
 import com.example.studysmart.presentation.theme.Red
 import com.example.studysmart.util.Priority
 import com.example.studysmart.util.changeMillisToDateString
+import com.example.studysmart.util.dummySubjectData
+import kotlinx.coroutines.launch
 import java.time.Instant
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -69,6 +74,9 @@ fun TaskScreen() {
         initialSelectedDateMillis = Instant.now().toEpochMilli(),
         selectableDates = FeatureOrPresentSelectableDates
     )
+    val sheetState = rememberModalBottomSheetState()
+    var isBottomSheetOpen by rememberSaveable { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
 
     DeleteDialog(
         isOpen = isDeleteDialogOpen,
@@ -90,6 +98,19 @@ fun TaskScreen() {
             isDatePickerDialogOpen = false
         }, onConfirmEvent = {
             isDatePickerDialogOpen = false
+        }
+    )
+
+    SubjectsBottomSheet(
+        sheetState = sheetState,
+        isOpen = isBottomSheetOpen,
+        subjects = dummySubjectData,
+        onClickSubjectEvent = { subject ->
+            scope.launch { sheetState.hide() }.invokeOnCompletion {
+                if (!sheetState.isVisible) isBottomSheetOpen = false
+            }
+        }, onDismissEvent = {
+            isBottomSheetOpen = false
         }
     )
 
@@ -223,7 +244,7 @@ fun TaskScreen() {
 
                 IconButton(
                     onClick = {
-
+                        isBottomSheetOpen = true
                     }
                 ) {
                     Icon(
