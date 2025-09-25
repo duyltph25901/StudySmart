@@ -50,4 +50,7 @@
     <string name="ok">OK</string>
     <string name="bottom_sheet_title">Related to subject</string>
     <string name="msg_empty_subjects_bts">Ready to begin? First, add a subject.</string>
+    <string name="study_sessions">Study sessions</string>
+    <string name="start">Start</string>
+    <string name="finish">Finish</string>
 </resources>
