@@ -46,12 +46,48 @@ import com.example.studysmart.presentation.components.DeleteDialog
 import com.example.studysmart.presentation.components.SubjectCard
 import com.example.studysmart.presentation.components.studySessionList
 import com.example.studysmart.presentation.components.taskList
+import com.example.studysmart.presentation.destinations.StudySessionScreenDestination
+import com.example.studysmart.presentation.destinations.SubjectScreenRouteDestination
+import com.example.studysmart.presentation.destinations.TaskScreenRouteDestination
+import com.example.studysmart.presentation.subject.SubjectScreenNavGraphsArgs
+import com.example.studysmart.presentation.task.TaskScreenNavGraphsArgs
 import com.example.studysmart.util.dummySubjectData
 import com.example.studysmart.util.dummyTaskSession
 import com.example.studysmart.util.dummyTasksData
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+
+@Destination(start = true)
+@Composable
+fun DashboardScreenRoute(
+    navigator: DestinationsNavigator
+) {
+    DashboardScreen(
+        onSubjectCardEvent = { subjectCardId->
+            subjectCardId?.let {
+                val navArg = SubjectScreenNavGraphsArgs(it)
+                navigator.navigate(SubjectScreenRouteDestination(navArg))
+            }
+        }, onTaskCardEvent = { taskId ->
+            taskId?.let {
+                val navArg = TaskScreenNavGraphsArgs(
+                    taskId = it,
+                    subjectId = null
+                )
+                navigator.navigate(TaskScreenRouteDestination(navArg))
+            }
+        }, onStartSessionEvent = {
+            navigator.navigate(StudySessionScreenDestination())
+        }
+    )
+}
 
 @Composable
-fun DashboardScreen() {
+fun DashboardScreen(
+    onSubjectCardEvent: (Int?) -> Unit,
+    onTaskCardEvent: (Int?) -> Unit,
+    onStartSessionEvent: () -> Unit
+) {
     var isAddSubjectDialogOpen by rememberSaveable { mutableStateOf(false) }
     var isDeleteSessionDialogOpen by rememberSaveable { mutableStateOf(false) }
     var subjectName by rememberSaveable { mutableStateOf("") }
@@ -120,6 +156,8 @@ fun DashboardScreen() {
                     subjectsList = dummySubjectData,
                     onAddSubjectEvent = {
                         isAddSubjectDialogOpen = true
+                    }, onSubjectCardEvent = {
+                        onSubjectCardEvent.invoke(it)
                     }
                 )
             }
@@ -133,7 +171,7 @@ fun DashboardScreen() {
                             vertical = 20.dp
                         ),
                     onClick = {
-
+                        onStartSessionEvent.invoke()
                     }
                 ) {
                     Text(
@@ -148,6 +186,7 @@ fun DashboardScreen() {
                 tasks = dummyTasksData,
                 onTaskClickEvent = { taskId ->
                     Log.d("duylt", "TaskId: $taskId")
+                    onTaskCardEvent.invoke(taskId)
                 }, onCheckboxTasClickEvent = { task ->
                     Log.d("duylt", "Task: $task")
                 }
@@ -217,7 +256,8 @@ private fun SubjectCardSection(
     modifier: Modifier = Modifier,
     subjectsList: List<Subject>,
     emptyListTextRes: Int = R.string.msg_empty_subjects,
-    onAddSubjectEvent: () -> Unit
+    onAddSubjectEvent: () -> Unit,
+    onSubjectCardEvent: (Int?) -> Unit
 ) {
     Column(
         modifier = modifier,
@@ -274,7 +314,7 @@ private fun SubjectCardSection(
                     subjectName = subject.name,
                     gradientColors = subject.colors,
                     onClick = {
-
+                        onSubjectCardEvent.invoke(subject.subjectId)
                     }
                 )
             }

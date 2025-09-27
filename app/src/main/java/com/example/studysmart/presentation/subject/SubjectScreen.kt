@@ -50,12 +50,52 @@ import com.example.studysmart.presentation.components.CountCard
 import com.example.studysmart.presentation.components.DeleteDialog
 import com.example.studysmart.presentation.components.studySessionList
 import com.example.studysmart.presentation.components.taskList
+import com.example.studysmart.presentation.destinations.TaskScreenRouteDestination
+import com.example.studysmart.presentation.task.TaskScreenNavGraphsArgs
 import com.example.studysmart.util.dummyTaskSession
 import com.example.studysmart.util.dummyTasksData
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+
+data class SubjectScreenNavGraphsArgs(
+    val subjectId: Int
+)
+
+@Destination(
+    navArgsDelegate = SubjectScreenNavGraphsArgs::class
+)
+@Composable
+fun SubjectScreenRoute(
+    navigator: DestinationsNavigator
+) {
+    SubjectScreen(
+        onBackEvent = {
+            navigator.navigateUp()
+        }, onAddTaskEvent = {
+            val navArg = TaskScreenNavGraphsArgs(
+                taskId = null,
+                subjectId = null
+            )
+            navigator.navigate(TaskScreenRouteDestination(navArg))
+        }, onTaskCardEvent = { taskId ->
+            taskId?.let {
+                val navArg = TaskScreenNavGraphsArgs(
+                    taskId = it,
+                    subjectId = null
+                )
+                navigator.navigate(TaskScreenRouteDestination(navArg))
+            }
+        }
+    )
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SubjectScreen() {
+fun SubjectScreen(
+    onBackEvent: () -> Unit,
+    onAddTaskEvent: () -> Unit,
+    onTaskCardEvent: (Int?) -> Unit,
+) {
     val sectionTitleTask = stringResource(R.string.upcoming_tasks).uppercase()
     val emptyTasks = stringResource(R.string.msg_empty_tasks)
     val sectionTitleSession = stringResource(R.string.recent_study_sessions).uppercase()
@@ -108,7 +148,7 @@ fun SubjectScreen() {
             SubjectScreenTopBar(
                 title = "English",
                 onBackEvent = {
-
+                    onBackEvent.invoke()
                 }, onDeleteEvent = {
                     isDeleteSubjectDialogOpen = true
                 }, onEditEvent = {
@@ -118,7 +158,7 @@ fun SubjectScreen() {
         }, floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = {
-                    isAddSubjectDialogOpen = true
+                    onAddTaskEvent.invoke()
                 }, icon = {
                     Icon(
                         imageVector = Icons.Default.Add,
@@ -155,6 +195,7 @@ fun SubjectScreen() {
                 tasks = dummyTasksData,
                 onTaskClickEvent = { taskId ->
                     Log.d("duylt", "TaskId: $taskId")
+                    onTaskCardEvent.invoke(taskId)
                 }, onCheckboxTasClickEvent = { task ->
                     Log.d("duylt", "Task: $task")
                 }
@@ -170,6 +211,7 @@ fun SubjectScreen() {
                 tasks = dummyTasksData,
                 onTaskClickEvent = { taskId ->
                     Log.d("duylt", "TaskId: $taskId")
+                    onTaskCardEvent.invoke(taskId)
                 }, onCheckboxTasClickEvent = { task ->
                     Log.d("duylt", "Task: $task")
                 }
