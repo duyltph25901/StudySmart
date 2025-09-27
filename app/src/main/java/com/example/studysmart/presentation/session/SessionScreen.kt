@@ -35,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.studysmart.R
 import com.example.studysmart.presentation.components.DeleteDialog
 import com.example.studysmart.presentation.components.SubjectsBottomSheet
@@ -47,9 +48,11 @@ import kotlinx.coroutines.launch
 
 @Destination
 @Composable
-fun StudySessionScreen(
+fun SessionScreenRoute(
     navigator: DestinationsNavigator
 ) {
+    val viewModel = hiltViewModel<SessionViewModel>()
+
     SessionScreen(
         onBackEvent = {
             navigator.navigateUp()

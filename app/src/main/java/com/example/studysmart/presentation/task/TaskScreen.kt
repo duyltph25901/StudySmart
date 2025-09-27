@@ -43,6 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.studysmart.R
 import com.example.studysmart.presentation.components.DeleteDialog
 import com.example.studysmart.presentation.components.FeatureOrPresentSelectableDates
@@ -70,6 +71,8 @@ data class TaskScreenNavGraphsArgs(
 fun TaskScreenRoute(
     navigator: DestinationsNavigator
 ) {
+    val viewModel = hiltViewModel<TaskViewModel>()
+
     TaskScreen(
         onBackEvent = {
             navigator.navigateUp()

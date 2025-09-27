@@ -43,6 +43,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.studysmart.R
 import com.example.studysmart.domain.model.Subject
 import com.example.studysmart.presentation.components.AddSubjectDialog
@@ -68,6 +69,8 @@ data class SubjectScreenNavGraphsArgs(
 fun SubjectScreenRoute(
     navigator: DestinationsNavigator
 ) {
+    val viewModel = hiltViewModel<SubjectViewModel>()
+
     SubjectScreen(
         onBackEvent = {
             navigator.navigateUp()

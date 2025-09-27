@@ -38,6 +38,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.studysmart.R
 import com.example.studysmart.domain.model.Subject
 import com.example.studysmart.presentation.components.AddSubjectDialog
@@ -46,7 +47,7 @@ import com.example.studysmart.presentation.components.DeleteDialog
 import com.example.studysmart.presentation.components.SubjectCard
 import com.example.studysmart.presentation.components.studySessionList
 import com.example.studysmart.presentation.components.taskList
-import com.example.studysmart.presentation.destinations.StudySessionScreenDestination
+import com.example.studysmart.presentation.destinations.SessionScreenRouteDestination
 import com.example.studysmart.presentation.destinations.SubjectScreenRouteDestination
 import com.example.studysmart.presentation.destinations.TaskScreenRouteDestination
 import com.example.studysmart.presentation.subject.SubjectScreenNavGraphsArgs
@@ -62,8 +63,10 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 fun DashboardScreenRoute(
     navigator: DestinationsNavigator
 ) {
+    val viewModel = hiltViewModel<DashboardViewModel>()
+
     DashboardScreen(
-        onSubjectCardEvent = { subjectCardId->
+        onSubjectCardEvent = { subjectCardId ->
             subjectCardId?.let {
                 val navArg = SubjectScreenNavGraphsArgs(it)
                 navigator.navigate(SubjectScreenRouteDestination(navArg))
@@ -77,7 +80,7 @@ fun DashboardScreenRoute(
                 navigator.navigate(TaskScreenRouteDestination(navArg))
             }
         }, onStartSessionEvent = {
-            navigator.navigate(StudySessionScreenDestination())
+            navigator.navigate(SessionScreenRouteDestination())
         }
     )
 }
