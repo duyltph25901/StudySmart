@@ -15,8 +15,8 @@ interface SubjectDao {
     @Query("select * from subjecttable where subjectId like :id limit 1")
     suspend fun getSubjectById(id: Int): Subject?
 
-    @Delete
-    suspend fun deleteSubject(subject: Subject)
+    @Query("delete from subjecttable where subjectId like :id")
+    suspend fun deleteSubjectById(subject: Int)
 
     @Query("select * from subjecttable")
     fun getAllSubjects(): Flow<List<Subject>>
