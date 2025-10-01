@@ -4,6 +4,8 @@ import com.example.studysmart.data.database.dao.TaskDao
 import com.example.studysmart.data.repository.TaskRepository
 import com.example.studysmart.domain.model.Task
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class TaskRepositoryImpl @Inject constructor(
@@ -28,4 +30,16 @@ class TaskRepositoryImpl @Inject constructor(
 
     override fun getAllTasks(): Flow<List<Task>> =
         taskDao.getAllTasks()
+
+    override fun getAllUpComingTask(): Flow<List<Task>> =
+        taskDao.getAllTasks().map { tasks ->
+            tasks.filter { !it.isComplete }
+        }.map { tasks ->
+            sortTasks(tasks)
+        }
+
+    private fun sortTasks(tasks: List<Task>): List<Task> =
+        tasks.sortedWith(
+            compareBy<Task> { it.duDate }.thenByDescending { it.priority }
+        )
 }

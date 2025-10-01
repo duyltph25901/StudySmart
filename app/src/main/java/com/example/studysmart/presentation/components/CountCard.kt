@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.sp
 fun CountCard(
     modifier: Modifier = Modifier,
     headingText: String,
-    count: Int
+    count: String
 ) {
     ElevatedCard(
         modifier = modifier
@@ -39,7 +39,7 @@ fun CountCard(
             )
             Spacer(modifier = Modifier.height(5.dp))
             Text(
-                text = count.toString(),
+                text = count,
                 style = MaterialTheme.typography.labelSmall.copy(
                     fontSize = 30.sp
                 )

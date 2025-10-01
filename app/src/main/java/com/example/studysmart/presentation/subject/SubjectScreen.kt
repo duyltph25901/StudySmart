@@ -312,7 +312,7 @@ fun SubjectOverViewSection(
         CountCard(
             modifier = Modifier.weight(1f),
             headingText = stringResource(R.string.goal_study_hours),
-            count = goalHours
+            count = goalHours.toString()
         )
 
         Spacer(modifier = Modifier.width(10.dp))
@@ -320,7 +320,7 @@ fun SubjectOverViewSection(
         CountCard(
             modifier = Modifier.weight(1f),
             headingText = stringResource(R.string.study_hours),
-            count = studiedHours
+            count = studiedHours.toString()
         )
 
         Spacer(modifier = Modifier.width(10.dp))
