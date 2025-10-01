@@ -15,7 +15,7 @@ data class Subject(
     var subjectId: Int = 0,
     var name: String,
     var goalHours: Float,
-    var colors: List<Color>
+    var colors: List<Int>
 ) {
     companion object {
         val subjectCardColors =

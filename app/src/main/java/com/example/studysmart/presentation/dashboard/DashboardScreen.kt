@@ -315,7 +315,7 @@ private fun SubjectCardSection(
             items(subjectsList) { subject ->
                 SubjectCard(
                     subjectName = subject.name,
-                    gradientColors = subject.colors,
+                    gradientColors = subject.colors.map { Color(it) },
                     onClick = {
                         onSubjectCardEvent.invoke(subject.subjectId)
                     }
