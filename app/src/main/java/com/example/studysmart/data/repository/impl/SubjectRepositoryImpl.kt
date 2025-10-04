@@ -1,6 +1,8 @@
 package com.example.studysmart.data.repository.impl
 
+import com.example.studysmart.data.database.dao.SessionDao
 import com.example.studysmart.data.database.dao.SubjectDao
+import com.example.studysmart.data.database.dao.TaskDao
 import com.example.studysmart.data.repository.SubjectRepository
 import com.example.studysmart.domain.model.Subject
 import kotlinx.coroutines.flow.Flow
@@ -9,7 +11,9 @@ import javax.inject.Singleton
 
 @Singleton
 class SubjectRepositoryImpl @Inject constructor(
-    private val subjectDao: SubjectDao
+    private val subjectDao: SubjectDao,
+    private val sessionDao: SessionDao,
+    private val taskDao: TaskDao
 ): SubjectRepository {
     override suspend fun upsertSubject(s: Subject) =
         subjectDao.upsertSubject(s)
@@ -20,8 +24,11 @@ class SubjectRepositoryImpl @Inject constructor(
     override fun getTotalGoalHours(): Flow<Float> =
         subjectDao.getTotalGoalHours()
 
-    override suspend fun deleteSubjectById(id: Int) =
+    override suspend fun deleteSubjectById(id: Int) {
         subjectDao.deleteSubjectById(id)
+        sessionDao.deleteSessionBySessionSubjectId(id)
+        taskDao.deleteTaskBySubjectId(id)
+    }
 
     override suspend fun getSubjectById(id: Int): Subject? =
         subjectDao.getSubjectById(id)
