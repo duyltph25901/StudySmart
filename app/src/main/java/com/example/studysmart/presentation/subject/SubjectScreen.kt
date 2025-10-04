@@ -26,10 +26,13 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -53,8 +56,11 @@ import com.example.studysmart.presentation.components.studySessionList
 import com.example.studysmart.presentation.components.taskList
 import com.example.studysmart.presentation.destinations.TaskScreenRouteDestination
 import com.example.studysmart.presentation.task.TaskScreenNavGraphsArgs
+import com.example.studysmart.util.SnackBarEvent
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.collectLatest
 
 data class SubjectScreenNavGraphsArgs(
     val subjectId: Int
@@ -73,6 +79,7 @@ fun SubjectScreenRoute(
     SubjectScreen(
         state = state,
         onEvent = viewModel::onEvent,
+        snackBarEvent = viewModel.snackBarEventFlow,
         onBackEvent = {
             navigator.navigateUp()
         }, onAddTaskEvent = {
@@ -98,6 +105,7 @@ fun SubjectScreenRoute(
 fun SubjectScreen(
     state: SubjectState,
     onEvent: (SubjectEvent) -> Unit,
+    snackBarEvent: SharedFlow<SnackBarEvent>,
     onBackEvent: () -> Unit,
     onAddTaskEvent: () -> Unit,
     onTaskCardEvent: (Int?) -> Unit,
@@ -116,6 +124,20 @@ fun SubjectScreen(
         derivedStateOf { listState.firstVisibleItemIndex == 0 }
     }
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    val snackBarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(true) {
+        snackBarEvent.collectLatest { event ->
+            when (event) {
+                is SnackBarEvent.ShowSnackBar -> {
+                    snackBarHostState.showSnackbar(
+                        message = event.message,
+                        duration = event.duration
+                    )
+                }
+            }
+        }
+    }
 
     AddSubjectDialog(
         isOpen = isAddSubjectDialogOpen,
@@ -176,7 +198,9 @@ fun SubjectScreen(
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = {
+        snackbarHost = {
+            SnackbarHost(hostState = snackBarHostState)
+        }, topBar = {
             SubjectScreenTopBar(
                 title = state.subjectName,
                 onBackEvent = {
