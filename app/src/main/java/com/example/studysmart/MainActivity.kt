@@ -4,22 +4,22 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.example.studysmart.presentation.dashboard.DashboardScreen
-import com.example.studysmart.presentation.session.SessionScreen
-import com.example.studysmart.presentation.subject.SubjectScreen
-import com.example.studysmart.presentation.task.TaskScreen
+import androidx.navigation.NavGraph
+import com.example.studysmart.presentation.NavGraphs
 import com.example.studysmart.presentation.theme.StudySmartTheme
+import com.ramcosta.composedestinations.DestinationsNavHost
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             StudySmartTheme {
-//                DashboardScreen()
-//                SubjectScreen()
-//                TaskScreen()
-                SessionScreen()
+                DestinationsNavHost(
+                    navGraph = NavGraphs.root
+                )
             }
         }
     }

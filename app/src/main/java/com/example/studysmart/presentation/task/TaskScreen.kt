@@ -43,6 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.studysmart.R
 import com.example.studysmart.presentation.components.DeleteDialog
 import com.example.studysmart.presentation.components.FeatureOrPresentSelectableDates
@@ -53,12 +54,37 @@ import com.example.studysmart.presentation.theme.Red
 import com.example.studysmart.util.Priority
 import com.example.studysmart.util.changeMillisToDateString
 import com.example.studysmart.util.dummySubjectData
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
 import java.time.Instant
 
+data class TaskScreenNavGraphsArgs(
+    val taskId: Int?,
+    val subjectId: Int?
+)
+
+@Destination(
+    navArgsDelegate = TaskScreenNavGraphsArgs::class
+)
+@Composable
+fun TaskScreenRoute(
+    navigator: DestinationsNavigator
+) {
+    val viewModel = hiltViewModel<TaskViewModel>()
+
+    TaskScreen(
+        onBackEvent = {
+            navigator.navigateUp()
+        }
+    )
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TaskScreen() {
+fun TaskScreen(
+    onBackEvent: () -> Unit
+) {
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var taskTitleError by rememberSaveable { mutableStateOf<String?>(null) }
@@ -122,7 +148,7 @@ fun TaskScreen() {
                 isComplete = false,
                 checkboxBorderColor = Red,
                 onBackEvent = {
-
+                    onBackEvent.invoke()
                 }, onDeleteEvent = {
                     isDeleteDialogOpen = true
                 }, onCheckboxEvent = {

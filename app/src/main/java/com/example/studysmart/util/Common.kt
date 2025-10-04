@@ -1,6 +1,8 @@
 package com.example.studysmart.util
 
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import com.example.studysmart.domain.model.Session
 import com.example.studysmart.domain.model.Subject
 import com.example.studysmart.domain.model.Task
@@ -28,11 +30,11 @@ enum class Priority(
 }
 
 val dummySubjectData = listOf(
-    Subject(0, "English", 10f, Subject.subjectCardColors[0]),
-    Subject(1, "Physic", 10f, Subject.subjectCardColors[1]),
-    Subject(2, "Math", 10f, Subject.subjectCardColors[2]),
-    Subject(3, "Fine Arts", 10f, Subject.subjectCardColors[3]),
-    Subject(4, "Music", 10f, Subject.subjectCardColors[4]),
+    Subject(0, "English", 10f, Subject.subjectCardColors[0].map { it.toArgb() }),
+    Subject(1, "Physic", 10f, Subject.subjectCardColors[1].map { it.toArgb() }),
+    Subject(2, "Math", 10f, Subject.subjectCardColors[2].map { it.toArgb() }),
+    Subject(3, "Fine Arts", 10f, Subject.subjectCardColors[3].map { it.toArgb() }),
+    Subject(4, "Music", 10f, Subject.subjectCardColors[4].map { it.toArgb() }),
 )
 
 val dummyTasksData = listOf(
@@ -59,4 +61,18 @@ fun Long?.changeMillisToDateString(): String {
     } ?: LocalDate.now()
 
     return date?.format(DateTimeFormatter.ofPattern("dd MMM yyyy")) ?: ""
+}
+
+fun Long.toHour(): Float {
+    val hour = this.toFloat() / 3600f
+    return "%.2f".format(hour).toFloat()
+}
+
+sealed class SnackBarEvent() {
+    data class ShowSnackBar(
+        val message: String,
+        val duration: SnackbarDuration = SnackbarDuration.Short
+    ): SnackBarEvent()
+
+    data object NavigateUp: SnackBarEvent()
 }

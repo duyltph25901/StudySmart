@@ -35,17 +35,36 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.studysmart.R
 import com.example.studysmart.presentation.components.DeleteDialog
 import com.example.studysmart.presentation.components.SubjectsBottomSheet
 import com.example.studysmart.presentation.components.studySessionList
 import com.example.studysmart.util.dummySubjectData
 import com.example.studysmart.util.dummyTaskSession
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
+
+@Destination
+@Composable
+fun SessionScreenRoute(
+    navigator: DestinationsNavigator
+) {
+    val viewModel = hiltViewModel<SessionViewModel>()
+
+    SessionScreen(
+        onBackEvent = {
+            navigator.navigateUp()
+        }
+    )
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SessionScreen() {
+fun SessionScreen(
+    onBackEvent: () -> Unit
+) {
     val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState()
     var isBottomSheetOpen by rememberSaveable { mutableStateOf(false) }
@@ -80,7 +99,7 @@ fun SessionScreen() {
         topBar = {
             SessionScreenTopBar(
                 onBackEvent = {
-
+                    onBackEvent.invoke()
                 }
             )
         }
