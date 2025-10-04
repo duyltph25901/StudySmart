@@ -44,8 +44,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.studysmart.R
-import com.example.studysmart.domain.model.Subject
 import com.example.studysmart.presentation.components.AddSubjectDialog
 import com.example.studysmart.presentation.components.CountCard
 import com.example.studysmart.presentation.components.DeleteDialog
@@ -53,8 +53,6 @@ import com.example.studysmart.presentation.components.studySessionList
 import com.example.studysmart.presentation.components.taskList
 import com.example.studysmart.presentation.destinations.TaskScreenRouteDestination
 import com.example.studysmart.presentation.task.TaskScreenNavGraphsArgs
-import com.example.studysmart.util.dummyTaskSession
-import com.example.studysmart.util.dummyTasksData
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
@@ -70,8 +68,11 @@ fun SubjectScreenRoute(
     navigator: DestinationsNavigator
 ) {
     val viewModel = hiltViewModel<SubjectViewModel>()
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
     SubjectScreen(
+        state = state,
+        onEvent = viewModel::onEvent,
         onBackEvent = {
             navigator.navigateUp()
         }, onAddTaskEvent = {
@@ -95,6 +96,8 @@ fun SubjectScreenRoute(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SubjectScreen(
+    state: SubjectState,
+    onEvent: (SubjectEvent) -> Unit,
     onBackEvent: () -> Unit,
     onAddTaskEvent: () -> Unit,
     onTaskCardEvent: (Int?) -> Unit,
@@ -107,30 +110,39 @@ fun SubjectScreen(
     val emptySessions = stringResource(R.string.msg_empty_sessions)
     var isAddSubjectDialogOpen by rememberSaveable { mutableStateOf(false) }
     var isDeleteSubjectDialogOpen by rememberSaveable { mutableStateOf(false) }
+    var isDeleteSessionDialogOpen by rememberSaveable { mutableStateOf(false) }
     val listState = rememberLazyListState()
     val isFABExpanded by remember {
         derivedStateOf { listState.firstVisibleItemIndex == 0 }
     }
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-    var subjectName by rememberSaveable { mutableStateOf("") }
-    var goalStudyHoursStr by rememberSaveable { mutableStateOf("") }
-    var selectedColor by rememberSaveable { mutableStateOf(Subject.subjectCardColors.random()) }
 
     AddSubjectDialog(
         isOpen = isAddSubjectDialogOpen,
-        selectedColors = selectedColor,
-        subjectName = subjectName,
-        goalHours = goalStudyHoursStr,
+        selectedColors = state.subjectCardColor,
+        subjectName = state.subjectName,
+        goalHours = state.goalStudyHours,
         onSubjectNameChange = { newSubjectName ->
-            subjectName = newSubjectName
+            onEvent(
+                SubjectEvent.OnSubjectNameChange(newSubjectName)
+            )
         }, onGoalHoursChange = { newGoalHours ->
-            goalStudyHoursStr = newGoalHours
+            onEvent(
+                SubjectEvent.OnGoalStudyHoursChange(newGoalHours)
+            )
         }, onConfirmEvent = {
             isAddSubjectDialogOpen = false
+            onEvent(
+                SubjectEvent.UpdateSubject
+            )
         }, onDismissRequestEvent = {
             isAddSubjectDialogOpen = false
-        }, onColorChangeEvent = { newSelectedColor ->
-            selectedColor = newSelectedColor
+        }, onColorChangeEvent = { colors ->
+            onEvent(
+                SubjectEvent.OnSubjectCardColorChange(
+                    colors
+                )
+            )
         }
     )
 
@@ -142,6 +154,23 @@ fun SubjectScreen(
             isDeleteSubjectDialogOpen = false
         }, onConfirmEvent = {
             isDeleteSubjectDialogOpen = false
+            onEvent(
+                SubjectEvent.DeleteSubject
+            )
+        }
+    )
+
+    DeleteDialog(
+        isOpen = isDeleteSessionDialogOpen,
+        title = "${stringResource(R.string.delete_session)}?",
+        bodyText = stringResource(R.string.msg_confirm_delete_session),
+        onDismissEvent = {
+            isDeleteSessionDialogOpen = false
+        }, onConfirmEvent = {
+            isDeleteSessionDialogOpen = false
+            onEvent(
+                SubjectEvent.DeleteSession
+            )
         }
     )
 
@@ -149,7 +178,7 @@ fun SubjectScreen(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             SubjectScreenTopBar(
-                title = "English",
+                title = state.subjectName,
                 onBackEvent = {
                     onBackEvent.invoke()
                 }, onDeleteEvent = {
@@ -186,21 +215,23 @@ fun SubjectScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(12.dp),
-                    studiedHours = 10,
-                    goalHours = 10,
-                    progress = 0.75f
+                    studiedHours = state.studiedHours.toString(),
+                    goalHours = state.goalStudyHours,
+                    progress = state.progress
                 )
             }
 
             taskList(
                 sectionTitle = sectionTitleTask,
                 emptyListText = emptyTasks,
-                tasks = dummyTasksData,
+                tasks = state.upComingTasks,
                 onTaskClickEvent = { taskId ->
                     Log.d("duylt", "TaskId: $taskId")
                     onTaskCardEvent.invoke(taskId)
                 }, onCheckboxTasClickEvent = { task ->
-                    Log.d("duylt", "Task: $task")
+                    onEvent(
+                        SubjectEvent.OnTaskIsCompleteChange(task)
+                    )
                 }
             )
 
@@ -211,7 +242,7 @@ fun SubjectScreen(
             taskList(
                 sectionTitle = sectionTitleTaskComplete,
                 emptyListText = emptyTasksComplete,
-                tasks = dummyTasksData,
+                tasks = state.completedTasks,
                 onTaskClickEvent = { taskId ->
                     Log.d("duylt", "TaskId: $taskId")
                     onTaskCardEvent.invoke(taskId)
@@ -227,9 +258,12 @@ fun SubjectScreen(
             studySessionList(
                 sectionTitle = sectionTitleSession,
                 emptyListText = emptySessions,
-                sessions = dummyTaskSession,
+                sessions = state.recentSessions,
                 onDeleteSessionEvent = { session ->
                     isDeleteSubjectDialogOpen = true
+                    onEvent(
+                        SubjectEvent.OnDeleteSessionButtonClick(session)
+                    )
                 }
             )
         }
@@ -296,8 +330,8 @@ fun SubjectScreenTopBar(
 @Composable
 fun SubjectOverViewSection(
     modifier: Modifier = Modifier,
-    studiedHours: Int,
-    goalHours: Int,
+    studiedHours: String,
+    goalHours: String,
     progress: Float,
 ) {
     val percentageProgress = remember(progress) {
@@ -312,7 +346,7 @@ fun SubjectOverViewSection(
         CountCard(
             modifier = Modifier.weight(1f),
             headingText = stringResource(R.string.goal_study_hours),
-            count = goalHours.toString()
+            count = goalHours
         )
 
         Spacer(modifier = Modifier.width(10.dp))
@@ -320,7 +354,7 @@ fun SubjectOverViewSection(
         CountCard(
             modifier = Modifier.weight(1f),
             headingText = stringResource(R.string.study_hours),
-            count = studiedHours.toString()
+            count = studiedHours
         )
 
         Spacer(modifier = Modifier.width(10.dp))
