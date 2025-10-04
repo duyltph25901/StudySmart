@@ -15,6 +15,7 @@ import com.example.studysmart.presentation.navArgs
 import com.example.studysmart.util.SnackBarEvent
 import com.example.studysmart.util.toHour
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -23,6 +24,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -66,8 +68,17 @@ class SubjectViewModel @Inject constructor(
 
     fun onEvent(event: SubjectEvent) {
         when (event) {
+            SubjectEvent.UpdateProgress -> {
+                val goalStudyHours =
+                    _state.value.goalStudyHours.toFloatOrNull() ?: 1f
+                _state.update {
+                    it.copy(
+                        progress = (_state.value.studiedHours / goalStudyHours).coerceIn(0f, 1f)
+                    )
+                }
+            }
             SubjectEvent.DeleteSession -> TODO()
-            SubjectEvent.DeleteSubject -> TODO()
+            SubjectEvent.DeleteSubject -> deleteSubject()
             SubjectEvent.UpdateSubject -> updateSubject()
             is SubjectEvent.OnDeleteSessionButtonClick -> TODO()
             is SubjectEvent.OnGoalStudyHoursChange -> {
@@ -98,16 +109,51 @@ class SubjectViewModel @Inject constructor(
         }
     }
 
-    private fun updateSubject() = viewModelScope.launch {
+    private fun deleteSubject() = viewModelScope.launch {
         try {
-            subjectRepository.upsertSubject(
-                Subject(
-                    subjectId = _state.value.currentSubjectId ?: 0,
-                    name = _state.value.subjectName,
-                    goalHours = _state.value.goalStudyHours.toFloatOrNull() ?: 1f,
-                    colors = _state.value.subjectCardColor.map { it.toArgb() }
+            _state.value.currentSubjectId?.let {
+                withContext(Dispatchers.IO) {
+                    subjectRepository.deleteSubjectById(it)
+                }
+                _snackBarEventFlow.emit(
+                    SnackBarEvent.ShowSnackBar(
+                        message = "Subject deleted successfully!",
+                    )
+                )
+                _snackBarEventFlow.emit(
+                    SnackBarEvent.NavigateUp
+                )
+            } ?: run {
+                _snackBarEventFlow.emit(
+                    SnackBarEvent.ShowSnackBar(
+                        message = "Subject id is null",
+                        duration = SnackbarDuration.Long
+                    )
+                )
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            _snackBarEventFlow.emit(
+                SnackBarEvent.ShowSnackBar(
+                    message = "Couldn't delete subject. ${e.message}",
+                    duration = SnackbarDuration.Long
                 )
             )
+        }
+    }
+
+    private fun updateSubject() = viewModelScope.launch {
+        try {
+            withContext(Dispatchers.IO) {
+                subjectRepository.upsertSubject(
+                    Subject(
+                        subjectId = _state.value.currentSubjectId ?: 0,
+                        name = _state.value.subjectName,
+                        goalHours = _state.value.goalStudyHours.toFloatOrNull() ?: 1f,
+                        colors = _state.value.subjectCardColor.map { it.toArgb() }
+                    )
+                )
+            }
 
             _snackBarEventFlow.emit(
                 SnackBarEvent.ShowSnackBar(
@@ -125,7 +171,7 @@ class SubjectViewModel @Inject constructor(
         }
     }
 
-    private fun fetchSubject() = viewModelScope.launch {
+    private fun fetchSubject() = viewModelScope.launch(Dispatchers.IO) {
         subjectRepository
             .getSubjectById(navArgs.subjectId)?.let { subject ->
                 _state.update { it ->

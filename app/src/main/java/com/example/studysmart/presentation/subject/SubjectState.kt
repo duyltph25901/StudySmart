@@ -16,6 +16,5 @@ data class SubjectState(
     val completedTasks: List<Task> = emptyList(),
     val session: Session? = null,
     val progress: Float = 0f,
-    val isLoading: Boolean = false
 ) {
 }

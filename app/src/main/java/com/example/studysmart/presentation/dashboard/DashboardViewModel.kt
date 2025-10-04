@@ -12,6 +12,7 @@ import com.example.studysmart.domain.model.Task
 import com.example.studysmart.util.SnackBarEvent
 import com.example.studysmart.util.toHour
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -21,6 +22,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -114,14 +116,16 @@ class DashboardViewModel @Inject constructor(
     private fun saveSubject() {
         viewModelScope.launch {
             try {
-                subjectRepository.upsertSubject(
-                    s = Subject(
-                        subjectId = 0,
-                        name = _state.value.subjectName,
-                        goalHours = _state.value.goalStudyHours.toFloatOrNull() ?: 1f,
-                        colors = _state.value.subjectCardColors.map { it.toArgb() }
+                withContext(Dispatchers.IO) {
+                    subjectRepository.upsertSubject(
+                        s = Subject(
+                            subjectId = 0,
+                            name = _state.value.subjectName,
+                            goalHours = _state.value.goalStudyHours.toFloatOrNull() ?: 1f,
+                            colors = _state.value.subjectCardColors.map { it.toArgb() }
+                        )
                     )
-                )
+                }
 
                 // clear all data before
                 _state.update {

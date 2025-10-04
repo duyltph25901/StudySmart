@@ -135,8 +135,21 @@ fun SubjectScreen(
                         duration = event.duration
                     )
                 }
+
+                SnackBarEvent.NavigateUp -> {
+                    onBackEvent.invoke()
+                }
             }
         }
+    }
+
+    LaunchedEffect(
+        key1 = state.studiedHours,
+        key2 = state.goalStudyHours
+    ) {
+        onEvent(
+            SubjectEvent.UpdateProgress
+        )
     }
 
     AddSubjectDialog(
