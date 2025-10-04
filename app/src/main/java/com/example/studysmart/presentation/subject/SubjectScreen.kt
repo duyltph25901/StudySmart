@@ -85,7 +85,7 @@ fun SubjectScreenRoute(
         }, onAddTaskEvent = {
             val navArg = TaskScreenNavGraphsArgs(
                 taskId = null,
-                subjectId = null
+                subjectId = state.currentSubjectId
             )
             navigator.navigate(TaskScreenRouteDestination(navArg))
         }, onTaskCardEvent = { taskId ->

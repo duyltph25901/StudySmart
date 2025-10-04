@@ -105,7 +105,15 @@ class SubjectViewModel @Inject constructor(
                 }
             }
 
-            is SubjectEvent.OnTaskIsCompleteChange -> TODO()
+            is SubjectEvent.OnTaskIsCompleteChange -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    taskRepository.upsertTask(
+                        event.task.copy(
+                            isComplete = !event.task.isComplete
+                        )
+                    )
+                }
+            }
         }
     }
 

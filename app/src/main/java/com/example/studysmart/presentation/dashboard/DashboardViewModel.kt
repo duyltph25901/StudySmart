@@ -109,8 +109,16 @@ class DashboardViewModel @Inject constructor(
                 }
             }
 
-            is DashboardEvent.OnTaskIsCompleteChange -> {}
+            is DashboardEvent.OnTaskIsCompleteChange -> updateTask(event.task)
         }
+    }
+
+    private fun updateTask(task: Task) = viewModelScope.launch(Dispatchers.IO) {
+        taskRepository.upsertTask(
+            task.copy(
+                isComplete = !task.isComplete
+            )
+        )
     }
 
     private fun saveSubject() {
