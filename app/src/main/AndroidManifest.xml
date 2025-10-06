@@ -29,7 +29,8 @@
         </activity>
 
         <service android:name=".presentation.session.StudySessionTimerService"
-            android:exported="false" />
+            android:exported="false"
+            android:foregroundServiceType="shortService"/>
     </application>
 
 </manifest>

@@ -5,6 +5,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
 import android.content.Intent
+import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.IBinder
 import androidx.compose.runtime.mutableStateOf
@@ -72,12 +73,10 @@ class StudySessionTimerService : Service() {
     @SuppressLint("ForegroundServiceType")
     private fun startForegroundService() {
         createNotificationChannel()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) startForeground(
+        startForeground(
             NOTIFICATION_ID,
             notificationBuilder.build(),
-            0
         )
-        else startForeground(NOTIFICATION_ID, notificationBuilder.build())
     }
 
     private fun stopForegroundService() {
