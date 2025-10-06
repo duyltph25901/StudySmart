@@ -32,6 +32,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -40,6 +41,7 @@ import com.example.studysmart.R
 import com.example.studysmart.presentation.components.DeleteDialog
 import com.example.studysmart.presentation.components.SubjectsBottomSheet
 import com.example.studysmart.presentation.components.studySessionList
+import com.example.studysmart.util.Constants
 import com.example.studysmart.util.dummySubjectData
 import com.example.studysmart.util.dummyTaskSession
 import com.ramcosta.composedestinations.annotation.Destination
@@ -65,6 +67,7 @@ fun SessionScreenRoute(
 fun SessionScreen(
     onBackEvent: () -> Unit
 ) {
+    val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState()
     var isBottomSheetOpen by rememberSaveable { mutableStateOf(false) }
@@ -138,11 +141,20 @@ fun SessionScreen(
                         .fillMaxWidth()
                         .padding(horizontal = 12.dp),
                     onStartEvent = {
-
+                        ServiceHelper.triggerForegroundService(
+                            context = context,
+                            action = Constants.ACTION_SERVICE_START,
+                        )
                     }, onCancelEvent = {
-
+                        ServiceHelper.triggerForegroundService(
+                            context = context,
+                            action = Constants.ACTION_SERVICE_CANCEL,
+                        )
                     }, onFinishEvent = {
-
+                        ServiceHelper.triggerForegroundService(
+                            context = context,
+                            action = Constants.ACTION_SERVICE_STOP,
+                        )
                     }
                 )
             }

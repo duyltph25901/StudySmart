@@ -53,4 +53,6 @@
     <string name="study_sessions">Study sessions</string>
     <string name="start">Start</string>
     <string name="finish">Finish</string>
+    <string name="title_service_timer_session">Study Session</string>
+    <string name="default_content_service_timer_session">00:00:00</string>
 </resources>

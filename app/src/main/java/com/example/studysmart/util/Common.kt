@@ -68,6 +68,10 @@ fun Long.toHour(): Float {
     return "%.2f".format(hour).toFloat()
 }
 
+fun Int.pad(): String {
+    return this.toString().padStart(length = 2, padChar = '0')
+}
+
 sealed class SnackBarEvent() {
     data class ShowSnackBar(
         val message: String,
